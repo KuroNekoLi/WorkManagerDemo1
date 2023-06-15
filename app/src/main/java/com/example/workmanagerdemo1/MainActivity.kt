@@ -11,7 +11,6 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import org.w3c.dom.Text
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: TextView
@@ -43,7 +42,22 @@ class MainActivity : AppCompatActivity() {
             .setInputData(data)
             .build()
 
-        workManager.enqueue(uploadRequest)
+        val filteringRequest = OneTimeWorkRequestBuilder<FilteringWorker>().build()
+        val compressingRequest = OneTimeWorkRequestBuilder<CompressingWorker>().build()
+        val downloadingWorker = OneTimeWorkRequestBuilder<DownloadingWorker>().build()
+
+        val parallelWorks = mutableListOf<OneTimeWorkRequest>()
+        parallelWorks.add(downloadingWorker)
+        parallelWorks.add(filteringRequest)
+
+
+        workManager
+            .beginWith(parallelWorks)
+            .then(compressingRequest)
+            .then(uploadRequest)
+            .enqueue()
+
+//        workManager.enqueue(uploadRequest)
         workManager.getWorkInfoByIdLiveData(uploadRequest.id)
             .observe(this, Observer {
                 textView.text = it.state.name //有四種狀態SUCCEEDED RUNNING ENQUEUED BLOCKED
