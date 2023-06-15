@@ -1,5 +1,6 @@
 package com.example.workmanagerdemo1
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.SystemClock
 import android.util.Log
@@ -14,6 +15,7 @@ class UploadWorker(context: Context,params:WorkerParameters) : Worker(context,pa
     companion object{
         const val KEY_WORKER = "key_worker"
     }
+    @SuppressLint("SimpleDateFormat")
     override fun doWork(): Result {
         try {
             val count = inputData.getInt(MainActivity.KEY_COUNT_VALUE,0)

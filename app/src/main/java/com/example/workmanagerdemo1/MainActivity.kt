@@ -10,7 +10,9 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: TextView
@@ -23,7 +25,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val btnStart = findViewById<Button>(R.id.btn_start)
         textView = findViewById(R.id.textView)
-        btnStart.setOnClickListener { setOneTimeWorkRequest() }
+        btnStart.setOnClickListener {
+//            setOneTimeWorkRequest()
+            setPeriodicWorkRequest()
+        }
     }
 
     private fun setOneTimeWorkRequest(){
@@ -68,6 +73,12 @@ class MainActivity : AppCompatActivity() {
                 }
             })
     }
-
+    private fun setPeriodicWorkRequest(){
+        val periodicWorkRequest = PeriodicWorkRequestBuilder<DownloadingWorker>(
+            15,
+            TimeUnit.MINUTES)
+            .build()
+        WorkManager.getInstance(applicationContext).enqueue(periodicWorkRequest)
+    }
 
 }
